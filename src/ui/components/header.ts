@@ -56,7 +56,7 @@ export function updateHeader(
     leftOffset += tab.length + 3;
   });
 
-  // "[under construction]" in accent color on the right
+  // "[Oliver Ulvebne]" in accent color on the right
   blessed.box({
     parent: header,
     top: 1,

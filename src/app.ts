@@ -1,5 +1,4 @@
 import blessed from "blessed";
-import { spawn } from "node:child_process";
 import type { Duplex } from "stream";
 import { StateManager, type AppState } from "./state";
 import { links } from "./content/links";
@@ -20,9 +19,14 @@ import {
   updateLoadingScreen,
 } from "./ui/components/loading-screen";
 
+interface FlashBox extends blessed.Widgets.BoxElement {
+  _flashBox?: blessed.Widgets.BoxElement;
+}
+
 const VERSION = "0.0.1";
 const ANIMATION_INTERVAL = 100;
-const TYPEWRITER_INTERVAL = 15; // Faster typewriter
+const TYPEWRITER_INTERVAL = 45;
+const TYPEWRITER_BATCH = 3;
 const CURSOR_BLINK_INTERVAL = 500;
 const MAP_REVEAL_INTERVAL = 50; // ~50ms per line = ~1.2s for full map
 const LOADING_DURATION = 2000;
@@ -176,33 +180,51 @@ export class App {
     this.clampSelectedLinkIndex();
     const selectedLink = links[this.selectedLinkIndex];
     if (!selectedLink) return;
-    this.openClientUrl(selectedLink.url);
-    this.openExternalUrl(selectedLink.url);
+
+    // iTerm2 URL opener (ignored by terminals that don't support it)
+    const encodedUrl = Buffer.from(selectedLink.url, "utf8").toString("base64");
+    this.stream.write(`\x1b]1337;OpenURL=:${encodedUrl}\x07`);
+
+    // OSC 52: copy URL to the client's clipboard (widely supported)
+    const clipboardPayload = Buffer.from(selectedLink.url, "utf8").toString("base64");
+    this.stream.write(`\x1b]52;c;${clipboardPayload}\x07`);
+
+    this.showFlash("Copied to clipboard");
   }
 
-  private openClientUrl(url: string): void {
-    const encodedUrl = Buffer.from(url, "utf8").toString("base64");
-    // iTerm2-specific URL opener; ignored by terminals that don't support it.
-    this.stream.write(`\u001b]1337;OpenURL=:${encodedUrl}\u0007`);
-  }
+  private flashTimeout: ReturnType<typeof setTimeout> | null = null;
 
-  private openExternalUrl(url: string): void {
-    const command =
-      process.platform === "darwin"
-        ? "open"
-        : process.platform === "win32"
-          ? "cmd"
-          : "xdg-open";
+  private showFlash(message: string): void {
+    if (!this.linksPage) return;
 
-    const args =
-      process.platform === "win32" ? ["/c", "start", "", url] : [url];
+    // Clear any pending flash timeout
+    if (this.flashTimeout) {
+      clearTimeout(this.flashTimeout);
+    }
 
-    const opener = spawn(command, args, {
-      detached: true,
-      stdio: "ignore",
-    });
-    opener.on("error", () => undefined);
-    opener.unref();
+    // Show flash text in footer area of the links box
+    const flashBox =
+      (this.linksPage as FlashBox)._flashBox ??
+      blessed.box({
+        parent: this.linksPage,
+        bottom: 0,
+        left: 2,
+        width: "shrink",
+        height: 1,
+        tags: true,
+        style: { bg: theme.bg },
+      });
+    (this.linksPage as FlashBox)._flashBox = flashBox;
+
+    flashBox.setContent(`{${theme.fgMuted}-fg}${message}{/${theme.fgMuted}-fg}`);
+    flashBox.show();
+    this.render();
+
+    this.flashTimeout = setTimeout(() => {
+      flashBox.hide();
+      this.render();
+      this.flashTimeout = null;
+    }, 2000);
   }
 
   private startAnimation(): void {
@@ -219,7 +241,7 @@ export class App {
 
       // Only run typewriter once, regardless of current page
       if (!state.typewriterComplete && state.typewriterIndex < bioLength) {
-        this.state.incrementTypewriter();
+        this.state.incrementTypewriter(TYPEWRITER_BATCH);
       } else if (!state.typewriterComplete) {
         // Typewriter finished, mark complete and stop timer
         this.state.setTypewriterComplete();
@@ -265,6 +287,12 @@ export class App {
     // Hide loading screen
     if (this.loadingScreen) {
       this.loadingScreen.hide();
+    }
+
+    // Stop animation timer — only needed for loading spinner
+    if (this.animationTimer) {
+      clearInterval(this.animationTimer);
+      this.animationTimer = null;
     }
 
     // Setup main UI
@@ -343,6 +371,10 @@ export class App {
       if (this.mapRevealTimer) {
         clearInterval(this.mapRevealTimer);
         this.mapRevealTimer = null;
+      }
+      if (this.flashTimeout) {
+        clearTimeout(this.flashTimeout);
+        this.flashTimeout = null;
       }
       this.screen.destroy();
     } catch {

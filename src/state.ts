@@ -73,8 +73,8 @@ export class StateManager {
     this.notify();
   }
 
-  incrementTypewriter(): void {
-    this.state.typewriterIndex++;
+  incrementTypewriter(amount: number = 1): void {
+    this.state.typewriterIndex += amount;
     this.notify();
   }
 
