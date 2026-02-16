@@ -7,17 +7,56 @@ export interface HeaderOptions {
   theme: Theme;
 }
 
+interface HeaderExtended extends blessed.Widgets.BoxElement {
+  _tabs?: blessed.Widgets.TextElement[];
+  _nameBox?: blessed.Widgets.BoxElement;
+}
+
 export function createHeader(
   options: HeaderOptions
 ): blessed.Widgets.BoxElement {
   const { parent, theme } = options;
 
-  const header = blessed.box({
+  const header: HeaderExtended = blessed.box({
     parent,
     top: 0,
     left: 0,
     width: "100%",
     height: 3,
+    style: {
+      bg: theme.bg,
+    },
+  });
+
+  // Create tab elements once
+  const tabs = ["About", "Links"];
+  const tabElements: blessed.Widgets.TextElement[] = [];
+  let leftOffset = 2;
+  for (const tab of tabs) {
+    const el = blessed.text({
+      parent: header,
+      top: 1,
+      left: leftOffset,
+      content: tab,
+      style: {
+        fg: theme.fgMuted,
+        bg: theme.bg,
+      },
+    });
+    tabElements.push(el);
+    leftOffset += tab.length + 3;
+  }
+  header._tabs = tabElements;
+
+  // "[Oliver Ulvebne]" in accent color on the right
+  header._nameBox = blessed.box({
+    parent: header,
+    top: 1,
+    right: 2,
+    width: "shrink",
+    height: 1,
+    tags: true,
+    content: "",
     style: {
       bg: theme.bg,
     },
@@ -32,41 +71,20 @@ export function updateHeader(
   theme: Theme,
   animatedText: string
 ): void {
-  // Clear existing children
-  while (header.children.length > 0) {
-    header.children[0].detach();
+  const ext = header as HeaderExtended;
+
+  // Update tab highlight
+  if (ext._tabs) {
+    ext._tabs.forEach((tab, index) => {
+      tab.style.fg = index === state.selectedNavIndex ? theme.accent : theme.fgMuted;
+      tab.style.bg = theme.bg;
+    });
   }
 
-  const tabs = ["About", "Links"];
-
-  // Create navigation tabs on the left
-  let leftOffset = 2;
-  tabs.forEach((tab, index) => {
-    const isSelected = index === state.selectedNavIndex;
-    blessed.text({
-      parent: header,
-      top: 1,
-      left: leftOffset,
-      content: tab,
-      style: {
-        fg: isSelected ? theme.accent : theme.fgMuted,
-        bg: theme.bg,
-      },
-    });
-    leftOffset += tab.length + 3;
-  });
-
-  // "[Oliver Ulvebne]" in accent color on the right
-  blessed.box({
-    parent: header,
-    top: 1,
-    right: 2,
-    width: animatedText.length + 2,
-    height: 1,
-    tags: true,
-    content: `{${theme.accent}-fg}[${animatedText}]{/${theme.accent}-fg}`,
-    style: {
-      bg: theme.bg,
-    },
-  });
+  // Update name text
+  if (ext._nameBox) {
+    ext._nameBox.setContent(
+      `{${theme.accent}-fg}[${animatedText}]{/${theme.accent}-fg}`
+    );
+  }
 }

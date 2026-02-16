@@ -25,8 +25,8 @@ interface FlashBox extends blessed.Widgets.BoxElement {
 
 const VERSION = "0.0.1";
 const ANIMATION_INTERVAL = 100;
-const TYPEWRITER_INTERVAL = 45;
-const TYPEWRITER_BATCH = 3;
+const TYPEWRITER_INTERVAL = 50;
+const TYPEWRITER_BATCH = 4;
 const CURSOR_BLINK_INTERVAL = 500;
 const MAP_REVEAL_INTERVAL = 50; // ~50ms per line = ~1.2s for full map
 const LOADING_DURATION = 2000;
@@ -48,6 +48,7 @@ export class App {
   private selectedLinkIndex = 0;
 
   private stream: Duplex;
+  private renderPending = false;
 
   constructor(stream: Duplex) {
     this.stream = stream;
@@ -351,7 +352,13 @@ export class App {
   }
 
   private render(): void {
-    this.screen.render();
+    if (this.renderPending) return;
+    this.renderPending = true;
+    // Batch all state changes within the same tick into a single render
+    queueMicrotask(() => {
+      this.renderPending = false;
+      this.screen.render();
+    });
   }
 
   destroy(): void {
