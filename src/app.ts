@@ -24,12 +24,12 @@ interface FlashBox extends blessed.Widgets.BoxElement {
 }
 
 const VERSION = "0.0.1";
-const ANIMATION_INTERVAL = 100;
-const TYPEWRITER_INTERVAL = 50;
-const TYPEWRITER_BATCH = 4;
+const ANIMATION_INTERVAL = 80;
+const TYPEWRITER_INTERVAL = 30;
+const TYPEWRITER_BATCH = 6;
 const CURSOR_BLINK_INTERVAL = 500;
-const MAP_REVEAL_INTERVAL = 50; // ~50ms per line = ~1.2s for full map
-const LOADING_DURATION = 2000;
+const MAP_REVEAL_INTERVAL = 40;
+const LOADING_DURATION = 1500;
 
 export class App {
   private screen: blessed.Widgets.Screen;
@@ -56,7 +56,7 @@ export class App {
     this.screen = createScreen({ stream });
 
     // Set terminal background via OSC escape sequence
-    stream.write("\x1b]11;#1a1a1a\x07");
+    stream.write(`\x1b]11;${theme.bg}\x07`);
 
     // Quit keys must be bound immediately so they work during all phases
     this.screen.key(["q", "C-c", "escape"], () => {
@@ -187,7 +187,9 @@ export class App {
     this.stream.write(`\x1b]1337;OpenURL=:${encodedUrl}\x07`);
 
     // OSC 52: copy URL to the client's clipboard (widely supported)
-    const clipboardPayload = Buffer.from(selectedLink.url, "utf8").toString("base64");
+    const clipboardPayload = Buffer.from(selectedLink.url, "utf8").toString(
+      "base64"
+    );
     this.stream.write(`\x1b]52;c;${clipboardPayload}\x07`);
 
     this.showFlash("Copied to clipboard");
@@ -217,7 +219,9 @@ export class App {
       });
     (this.linksPage as FlashBox)._flashBox = flashBox;
 
-    flashBox.setContent(`{${theme.fgMuted}-fg}${message}{/${theme.fgMuted}-fg}`);
+    flashBox.setContent(
+      `{${theme.fgMuted}-fg}${message}{/${theme.fgMuted}-fg}`
+    );
     flashBox.show();
     this.render();
 

@@ -8,13 +8,14 @@ export interface FooterOptions {
 }
 
 interface FooterExtended extends blessed.Widgets.BoxElement {
+  _sigBox?: blessed.Widgets.BoxElement;
   _shortcutsBox?: blessed.Widgets.BoxElement;
 }
 
 export function createFooter(
   options: FooterOptions
 ): blessed.Widgets.BoxElement {
-  const { parent, theme, version } = options;
+  const { parent, theme } = options;
 
   const footer: FooterExtended = blessed.box({
     parent,
@@ -27,21 +28,23 @@ export function createFooter(
     },
   });
 
-  // Version on the left (static, never changes)
-  blessed.text({
+  // Signature on the left
+  footer._sigBox = blessed.box({
     parent: footer,
     left: 2,
-    content: `v${version}`,
+    width: "shrink",
+    height: 1,
+    tags: true,
+    content: "",
     style: {
-      fg: theme.fgMuted,
       bg: theme.bg,
     },
   });
 
-  // Shortcuts in center (updated on page change)
+  // Shortcuts on the right
   footer._shortcutsBox = blessed.box({
     parent: footer,
-    left: "center",
+    right: 2,
     width: "shrink",
     height: 1,
     tags: true,
@@ -60,11 +63,25 @@ export function updateFooter(
   linksPageActive: boolean
 ): void {
   const ext = footer as FooterExtended;
-  if (!ext._shortcutsBox) return;
 
-  const shortcuts = linksPageActive
-    ? `{${theme.accent}-fg}tab{/${theme.accent}-fg} page  {${theme.accent}-fg}↑↓{/${theme.accent}-fg} select  {${theme.accent}-fg}enter/space{/${theme.accent}-fg} open  {${theme.accent}-fg}q{/${theme.accent}-fg} quit`
-    : `{${theme.accent}-fg}tab{/${theme.accent}-fg} page  {${theme.accent}-fg}q{/${theme.accent}-fg} quit`;
+  footer.style.bg = theme.bg;
 
-  ext._shortcutsBox.setContent(shortcuts);
+  // Update signature
+  if (ext._sigBox) {
+    ext._sigBox.style.bg = theme.bg;
+    ext._sigBox.setContent(
+      `{${theme.accent}-fg}Oliver Ulvebne{/${theme.accent}-fg}{${theme.fgMuted}-fg} // 2026 // 21{/${theme.fgMuted}-fg}`
+    );
+  }
+
+  // Update shortcuts
+  if (ext._shortcutsBox) {
+    ext._shortcutsBox.style.bg = theme.bg;
+
+    const shortcuts = linksPageActive
+      ? `{${theme.accent}-fg}tab{/${theme.accent}-fg}{${theme.fgMuted}-fg} page  {/${theme.fgMuted}-fg}{${theme.accent}-fg}↑↓{/${theme.accent}-fg}{${theme.fgMuted}-fg} select  {/${theme.fgMuted}-fg}{${theme.accent}-fg}enter{/${theme.accent}-fg}{${theme.fgMuted}-fg} open  {/${theme.fgMuted}-fg}{${theme.accent}-fg}q{/${theme.accent}-fg}{${theme.fgMuted}-fg} quit{/${theme.fgMuted}-fg}`
+      : `{${theme.accent}-fg}tab{/${theme.accent}-fg}{${theme.fgMuted}-fg} page  {/${theme.fgMuted}-fg}{${theme.accent}-fg}q{/${theme.accent}-fg}{${theme.fgMuted}-fg} quit{/${theme.fgMuted}-fg}`;
+
+    ext._shortcutsBox.setContent(shortcuts);
+  }
 }

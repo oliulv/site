@@ -1,16 +1,17 @@
 export interface Theme {
   bg: string;
+  bgSubtle: string;
   fg: string;
   fgMuted: string;
   accent: string;
   border: string;
 }
 
-// Single dark theme with darker orange accent
 export const theme: Theme = {
-  bg: "#1a1a1a",
-  fg: "#ffffff",
-  fgMuted: "#666666",
-  accent: "#cc5500", // Darker orange
-  border: "#333333",
+  bg: "#0d0d0d",
+  bgSubtle: "#141414",
+  fg: "#e8e4de",
+  fgMuted: "#5a5549",
+  accent: "#e86a10",
+  border: "#2a2622",
 };

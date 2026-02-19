@@ -10,7 +10,7 @@ export function LoadingScreen({ spinnerFrame }: LoadingScreenProps) {
   return (
     <div className="loading-screen">
       <span className="spinner">{frame}</span>
-      <span className="loading-text">Loading ...</span>
+      <span className="loading-text">Initializing</span>
     </div>
   );
 }

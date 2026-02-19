@@ -8,6 +8,8 @@ const TABS: { label: string; page: "about" | "links" }[] = [
   { label: "Links", page: "links" },
 ];
 
+const EQUATION = "[1.01\u00B3\u2076\u2075 = 37.8]  >  [0.99\u00B3\u2076\u2075 = 0.03]";
+
 export function Header({ selectedNavIndex, onTabClick }: HeaderProps) {
   return (
     <div className="header">
@@ -22,7 +24,7 @@ export function Header({ selectedNavIndex, onTabClick }: HeaderProps) {
           </span>
         ))}
       </div>
-      <div className="header-name">[Oliver Ulvebne]</div>
+      <div className="header-equation">{EQUATION}</div>
     </div>
   );
 }

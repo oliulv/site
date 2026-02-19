@@ -82,7 +82,7 @@ export function createAboutPage(
     },
   });
 
-  // ASCII map on the left
+  // ASCII map on the left — muted color for the dots
   const mapBox = blessed.box({
     parent: container,
     top: 0,
@@ -92,7 +92,7 @@ export function createAboutPage(
     content: "",
     tags: true,
     style: {
-      fg: theme.fg,
+      fg: theme.fgMuted,
       bg: theme.bg,
     },
   });
@@ -149,7 +149,7 @@ export function updateAboutPage(
 ): void {
   const ext = container as ExtendedBox;
   if (ext.mapBox) {
-    ext.mapBox.style.fg = theme.fg;
+    ext.mapBox.style.fg = theme.fgMuted;
     ext.mapBox.style.bg = theme.bg;
     ext.mapBox.setContent(renderMap(theme, mapRevealIndex));
   }

@@ -6,8 +6,6 @@ import { AboutPage } from "./components/AboutPage";
 import { LinksPage } from "./components/LinksPage";
 import "./App.css";
 
-const VERSION = "0.0.1";
-
 export default function App() {
   const state = useAppState();
 
@@ -42,10 +40,7 @@ export default function App() {
         )}
       </div>
       {state.chromeVisible && (
-        <Footer
-          version={VERSION}
-          linksPageActive={state.currentPage === "links"}
-        />
+        <Footer linksPageActive={state.currentPage === "links"} />
       )}
     </div>
   );

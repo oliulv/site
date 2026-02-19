@@ -12,6 +12,8 @@ interface HeaderExtended extends blessed.Widgets.BoxElement {
   _nameBox?: blessed.Widgets.BoxElement;
 }
 
+const EQUATION = "[1.01\u00B3\u2076\u2075 = 37.8]  >  [0.99\u00B3\u2076\u2075 = 0.03]";
+
 export function createHeader(
   options: HeaderOptions
 ): blessed.Widgets.BoxElement {
@@ -48,7 +50,7 @@ export function createHeader(
   }
   header._tabs = tabElements;
 
-  // "[Oliver Ulvebne]" in accent color on the right
+  // Equation in accent color on the right
   header._nameBox = blessed.box({
     parent: header,
     top: 1,
@@ -69,22 +71,26 @@ export function updateHeader(
   header: blessed.Widgets.BoxElement,
   state: AppState,
   theme: Theme,
-  animatedText: string
+  _animatedText: string
 ): void {
   const ext = header as HeaderExtended;
+
+  header.style.bg = theme.bg;
 
   // Update tab highlight
   if (ext._tabs) {
     ext._tabs.forEach((tab, index) => {
-      tab.style.fg = index === state.selectedNavIndex ? theme.accent : theme.fgMuted;
+      tab.style.fg =
+        index === state.selectedNavIndex ? theme.accent : theme.fgMuted;
       tab.style.bg = theme.bg;
     });
   }
 
-  // Update name text
+  // Update equation text
   if (ext._nameBox) {
+    ext._nameBox.style.bg = theme.bg;
     ext._nameBox.setContent(
-      `{${theme.accent}-fg}[${animatedText}]{/${theme.accent}-fg}`
+      `{${theme.accent}-fg}${EQUATION}{/${theme.accent}-fg}`
     );
   }
 }

@@ -52,9 +52,9 @@ export function createLoadingScreen(
   blessed.text({
     parent: loadingBox,
     left: 3,
-    content: "Loading ...",
+    content: "Initializing",
     style: {
-      fg: theme.fg,
+      fg: theme.fgMuted,
       bg: theme.bg,
     },
   });

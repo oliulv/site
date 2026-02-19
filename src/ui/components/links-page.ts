@@ -68,7 +68,7 @@ export function createLinksPage(
     content: renderContent(theme, 0),
     style: {
       fg: theme.fg,
-      border: { fg: theme.accent },
+      border: { fg: theme.border },
     },
   });
 
@@ -81,6 +81,6 @@ export function updateLinksPage(
   selectedIndex: number
 ): void {
   container.style.fg = theme.fg;
-  container.style.border = { fg: theme.accent };
+  container.style.border = { fg: theme.border };
   container.setContent(renderContent(theme, selectedIndex));
 }

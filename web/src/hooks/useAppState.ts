@@ -6,12 +6,12 @@ import { links } from "../content/links";
 type AppPhase = "loading" | "main";
 type PageName = "about" | "links";
 
-const TYPEWRITER_INTERVAL = 50;
-const TYPEWRITER_BATCH = 4;
+const TYPEWRITER_INTERVAL = 30;
+const TYPEWRITER_BATCH = 6;
 const CURSOR_BLINK_INTERVAL = 500;
-const MAP_REVEAL_INTERVAL = 50;
-const LOADING_DURATION = 2000;
-const SPINNER_INTERVAL = 100;
+const MAP_REVEAL_INTERVAL = 40;
+const LOADING_DURATION = 1500;
+const SPINNER_INTERVAL = 80;
 
 const MAP_LINE_COUNT = ukMap.split("\n").length;
 const BIO_LENGTH = bio.length;
@@ -30,7 +30,6 @@ export function useAppState() {
   const [navigationEnabled, setNavigationEnabled] = useState(false);
 
   const typewriterCompleteRef = useRef(false);
-  const mapRevealRef = useRef(0);
 
   // Loading phase: spinner animation
   useEffect(() => {
@@ -86,8 +85,6 @@ export function useAppState() {
     const timer = setInterval(() => {
       setMapRevealIndex((prev) => {
         const next = prev + 1;
-        mapRevealRef.current = next;
-        // setChromeVisible(true) is idempotent — React skips re-render if value unchanged
         if (next >= revealThreshold) {
           setChromeVisible(true);
         }
