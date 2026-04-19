@@ -7,7 +7,7 @@ Previously I have also:
 Resold (& botted) sneakers.
 Flipped NFTs.
 Co-founded and led the launch of a 7-figure blockchain project (at 17).
-Won the first ever xAI London Grokathon (SpaceX is flying me out to Starbase to see Starship V3).
+Won the first ever xAI London Grokathon.
 Won both the London and Global Mistral Hackathons ($25k+ in prizes).`;
 
 export const bioLines = bio.split("\n");
