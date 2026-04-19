@@ -4,10 +4,10 @@ I like writing Typescript and building stuff.
 I also like venture capital, public speaking, the Acquired podcast, gym and cycling.
 
 Previously I have also:
-Resold (& botted) sneakers.
-Flipped NFTs.
-Co-founded and led the launch of a 7-figure blockchain project (at 17).
+Won both the London and Global Mistral Hackathons ($25k+ in prizes).
 Won the first ever xAI London Grokathon.
-Won both the London and Global Mistral Hackathons ($25k+ in prizes).`;
+Co-founded and led the launch of a 7-figure blockchain project (at 17).
+Flipped NFTs.
+Resold (& botted) sneakers.`;
 
 export const bioLines = bio.split("\n");
