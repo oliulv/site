@@ -1,8 +1,8 @@
 /* ── Theme ─────────────────────────────────────────────── */
 
 :root {
-  --bg: #0d0d0d;
-  --bg-subtle: #141414;
+  --bg: #1a1a1a;
+  --bg-subtle: #222222;
   --fg: #e8e4de;
   --fg-muted: #5a5549;
   --accent: #e86a10;
@@ -29,8 +29,7 @@ body,
 body {
   background: var(--bg);
   color: var(--fg);
-  font-family: "Space Mono", "JetBrains Mono", "SF Mono", "Fira Code",
-    "Consolas", monospace;
+  font-family: "SF Mono", "Menlo", "JetBrains Mono", "Consolas", monospace;
   font-size: 14px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
