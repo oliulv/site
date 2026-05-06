@@ -6,11 +6,11 @@ import { links } from "../content/links";
 type AppPhase = "loading" | "main";
 type PageName = "about" | "links";
 
-const TYPEWRITER_INTERVAL = 30;
+const TYPEWRITER_INTERVAL = 15;
 const TYPEWRITER_BATCH = 6;
 const CURSOR_BLINK_INTERVAL = 500;
 const MAP_REVEAL_INTERVAL = 40;
-const LOADING_DURATION = 1500;
+const LOADING_DURATION = 750;
 const SPINNER_INTERVAL = 80;
 
 const MAP_LINE_COUNT = ukMap.split("\n").length;
