@@ -96,8 +96,10 @@ body {
   transition: color 0.2s ease;
 }
 
-.header-tab:hover {
-  color: var(--fg);
+@media (hover: hover) {
+  .header-tab:hover {
+    color: var(--fg);
+  }
 }
 
 .header-tab.active {
@@ -221,8 +223,10 @@ body {
   transition: background 0.15s ease;
 }
 
-.link-row:hover {
-  background: var(--accent-dim);
+@media (hover: hover) {
+  .link-row:hover {
+    background: var(--accent-dim);
+  }
 }
 
 .link-row .link-indicator {
@@ -328,6 +332,10 @@ body {
   }
 
   .header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--bg);
     padding: 0.85em 1.5ch;
     flex-wrap: wrap;
     gap: 0.5em 2ch;
@@ -350,12 +358,12 @@ body {
   .main-content {
     overflow: visible;
     align-items: flex-start;
-    padding: 2em 1.5ch;
+    padding: 1.5em 1.5ch;
   }
 
   .about-page {
     flex-direction: column;
-    gap: 2.5em;
+    gap: 1.5em;
     align-items: stretch;
     width: 100%;
   }
@@ -364,6 +372,7 @@ body {
     width: 42ch;
     max-width: 100%;
     align-self: center;
+    font-size: 10px;
   }
 
   .location-label {
