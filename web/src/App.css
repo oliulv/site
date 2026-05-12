@@ -304,3 +304,98 @@ body {
 .shortcut-key {
   color: var(--accent);
 }
+
+/* ── Mobile ───────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  html,
+  body,
+  #root {
+    height: auto;
+    min-height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  body {
+    font-size: 12px;
+  }
+
+  .app {
+    min-width: 0;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .header {
+    padding: 0.85em 1.5ch;
+    flex-wrap: wrap;
+    gap: 0.5em 2ch;
+  }
+
+  .header-tabs {
+    gap: 2.5ch;
+  }
+
+  .header-tab {
+    padding: 0.25em 0;
+  }
+
+  .header-equation {
+    font-size: 11px;
+    flex-basis: 100%;
+    text-align: left;
+  }
+
+  .main-content {
+    overflow: visible;
+    align-items: flex-start;
+    padding: 2em 1.5ch;
+  }
+
+  .about-page {
+    flex-direction: column;
+    gap: 2.5em;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .about-map {
+    width: 42ch;
+    max-width: 100%;
+    align-self: center;
+  }
+
+  .location-label {
+    font-size: 11px;
+  }
+
+  .about-bio {
+    width: 100%;
+  }
+
+  .links-page {
+    width: 100%;
+  }
+
+  .links-box {
+    width: 100%;
+    padding: 1.4em 1.8ch;
+  }
+
+  .link-row {
+    padding: 0.5em 0;
+  }
+
+  .link-row .link-label {
+    width: 11ch;
+  }
+
+  .footer {
+    padding: 0.75em 1.5ch;
+  }
+
+  .footer-shortcuts {
+    display: none;
+  }
+}
