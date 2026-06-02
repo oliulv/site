@@ -38,6 +38,7 @@ export class App {
   private typewriterTimer: ReturnType<typeof setInterval> | null = null;
   private cursorTimer: ReturnType<typeof setInterval> | null = null;
   private mapRevealTimer: ReturnType<typeof setInterval> | null = null;
+  private loadingTimer: ReturnType<typeof setTimeout> | null = null;
 
   // UI Components
   private loadingScreen: blessed.Widgets.BoxElement | null = null;
@@ -49,6 +50,7 @@ export class App {
 
   private stream: Duplex;
   private renderPending = false;
+  private destroyed = false;
 
   constructor(stream: Duplex) {
     this.stream = stream;
@@ -76,7 +78,9 @@ export class App {
     this.render();
 
     // Transition to main after loading
-    setTimeout(() => {
+    this.loadingTimer = setTimeout(() => {
+      this.loadingTimer = null;
+      if (this.destroyed) return;
       this.transitionToMain();
     }, LOADING_DURATION);
   }
@@ -356,17 +360,28 @@ export class App {
   }
 
   private render(): void {
+    if (this.destroyed) return;
     if (this.renderPending) return;
     this.renderPending = true;
     // Batch all state changes within the same tick into a single render
     queueMicrotask(() => {
+      if (this.destroyed) return;
       this.renderPending = false;
       this.screen.render();
     });
   }
 
-  destroy(): void {
+  destroy(options: { sendGoodbye?: boolean } = {}): void {
+    if (this.destroyed) return;
+    this.destroyed = true;
+
+    const { sendGoodbye = true } = options;
+
     try {
+      if (this.loadingTimer) {
+        clearTimeout(this.loadingTimer);
+        this.loadingTimer = null;
+      }
       if (this.animationTimer) {
         clearInterval(this.animationTimer);
         this.animationTimer = null;
@@ -393,6 +408,8 @@ export class App {
     }
 
     // Reset terminal state and close the SSH stream
+    if (!sendGoodbye) return;
+
     try {
       this.stream.write("\x1b[?25h"); // Show cursor
       this.stream.write("\x1b[0m"); // Reset text attributes

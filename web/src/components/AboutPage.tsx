@@ -38,9 +38,7 @@ export function AboutPage({
   cursorVisible,
   mapRevealIndex,
 }: AboutPageProps) {
-  const manchSet = new Set(
-    manchesterPositions.map(([r, c]) => `${r},${c}`),
-  );
+  const manchSet = new Set(manchesterPositions.map(([r, c]) => `${r},${c}`));
 
   const linesToShow = Math.min(mapRevealIndex, MAP_LINES.length);
 
@@ -86,7 +84,7 @@ export function AboutPage({
                   </span>
                 ) : (
                   c.ch
-                ),
+                )
               )}
               {"\n"}
             </span>

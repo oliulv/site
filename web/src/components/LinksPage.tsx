@@ -10,7 +10,7 @@ interface LinksPageProps {
 export function LinksPage({ selectedLinkIndex, onSelectLink }: LinksPageProps) {
   const safeIndex = Math.min(
     Math.max(selectedLinkIndex, 0),
-    Math.max(links.length - 1, 0),
+    Math.max(links.length - 1, 0)
   );
   const selectedLink = links[safeIndex];
 
@@ -42,8 +42,7 @@ export function LinksPage({ selectedLinkIndex, onSelectLink }: LinksPageProps) {
           })}
         </div>
         <div className="links-url">
-          Open:{" "}
-          <span className="links-url-value">{selectedLink?.url}</span>
+          Open: <span className="links-url-value">{selectedLink?.url}</span>
         </div>
       </div>
     </div>

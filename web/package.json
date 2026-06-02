@@ -2,9 +2,10 @@
   "name": "oliulv-web",
   "private": true,
   "version": "0.0.1",
+  "portless": "oliulv",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "portless run vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit"

@@ -12,7 +12,8 @@ interface HeaderExtended extends blessed.Widgets.BoxElement {
   _nameBox?: blessed.Widgets.BoxElement;
 }
 
-const EQUATION = "[1.01\u00B3\u2076\u2075 = 37.8]  >  [0.99\u00B3\u2076\u2075 = 0.03]";
+const EQUATION =
+  "[1.01\u00B3\u2076\u2075 = 37.8]  >  [0.99\u00B3\u2076\u2075 = 0.03]";
 
 export function createHeader(
   options: HeaderOptions

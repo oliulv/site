@@ -4,6 +4,9 @@ import tsparser from "@typescript-eslint/parser";
 import prettier from "eslint-config-prettier";
 
 export default [
+  {
+    ignores: ["**/dist/**", "**/node_modules/**"],
+  },
   eslint.configs.recommended,
   {
     files: ["**/*.ts"],
@@ -19,8 +22,12 @@ export default [
         setInterval: "readonly",
         clearInterval: "readonly",
         setTimeout: "readonly",
+        clearTimeout: "readonly",
+        queueMicrotask: "readonly",
         Buffer: "readonly",
         NodeJS: "readonly",
+        KeyboardEvent: "readonly",
+        window: "readonly",
       },
     },
     plugins: {
@@ -38,7 +45,4 @@ export default [
     },
   },
   prettier,
-  {
-    ignores: ["dist/", "node_modules/", "*.js"],
-  },
 ];

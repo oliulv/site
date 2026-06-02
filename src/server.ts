@@ -13,6 +13,25 @@ interface PtyInfo {
   term: string;
 }
 
+const DEFAULT_PTY_INFO: PtyInfo = {
+  cols: 120,
+  rows: 40,
+  width: 960,
+  height: 800,
+  term: "xterm-256color",
+};
+
+function normalizePtyInfo(info?: Partial<PtyInfo>): PtyInfo {
+  return {
+    cols: info?.cols && info.cols > 0 ? info.cols : DEFAULT_PTY_INFO.cols,
+    rows: info?.rows && info.rows > 0 ? info.rows : DEFAULT_PTY_INFO.rows,
+    width: info?.width && info.width > 0 ? info.width : DEFAULT_PTY_INFO.width,
+    height:
+      info?.height && info.height > 0 ? info.height : DEFAULT_PTY_INFO.height,
+    term: info?.term || DEFAULT_PTY_INFO.term,
+  };
+}
+
 interface ExtendedStream extends NodeJS.WritableStream {
   rows?: number;
   columns?: number;
@@ -63,26 +82,14 @@ export function createSSHServer(port: number): Server {
         const session = accept();
 
         session.on("pty", (accept, _reject, info) => {
-          ptyInfo = {
-            cols: info.cols,
-            rows: info.rows,
-            width: info.width,
-            height: info.height,
-            term: "xterm-256color",
-          };
+          ptyInfo = normalizePtyInfo(info);
           accept?.();
         });
 
         session.on("shell", (accept) => {
           if (!ptyInfo) {
             console.log("No PTY allocated, using defaults");
-            ptyInfo = {
-              cols: 80,
-              rows: 24,
-              width: 640,
-              height: 480,
-              term: "xterm-256color",
-            };
+            ptyInfo = DEFAULT_PTY_INFO;
           }
 
           const stream = accept();
@@ -98,22 +105,23 @@ export function createSSHServer(port: number): Server {
 
           // Handle window resize
           session.on("window-change", (_accept, _reject, info) => {
-            extStream.rows = info.rows;
-            extStream.columns = info.cols;
+            const nextPtyInfo = normalizePtyInfo(info);
+            extStream.rows = nextPtyInfo.rows;
+            extStream.columns = nextPtyInfo.cols;
             stream.emit("resize");
           });
 
           // Clean up if stream closes (client disconnect)
           stream.on("close", () => {
             if (app) {
-              app.destroy();
+              app.destroy({ sendGoodbye: false });
               app = null;
             }
           });
 
           stream.on("end", () => {
             if (app) {
-              app.destroy();
+              app.destroy({ sendGoodbye: false });
               app = null;
             }
           });
@@ -124,7 +132,7 @@ export function createSSHServer(port: number): Server {
     client.on("close", () => {
       console.log("Client disconnected");
       if (app) {
-        app.destroy();
+        app.destroy({ sendGoodbye: false });
         app = null;
       }
     });

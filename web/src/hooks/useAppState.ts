@@ -112,7 +112,7 @@ export function useAppState() {
       setCurrentPage(pages[newIndex]!);
       setSelectedNavIndex(newIndex);
     },
-    [navigationEnabled, currentPage],
+    [navigationEnabled, currentPage]
   );
 
   const moveLinkSelection = useCallback(
@@ -123,7 +123,7 @@ export function useAppState() {
         return (prev + delta + links.length) % links.length;
       });
     },
-    [currentPage],
+    [currentPage]
   );
 
   // Keyboard bindings

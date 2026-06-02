@@ -70,7 +70,7 @@ export function updateFooter(
   if (ext._sigBox) {
     ext._sigBox.style.bg = theme.bg;
     ext._sigBox.setContent(
-      `{${theme.accent}-fg}Oliver Ulvebne{/${theme.accent}-fg}{${theme.fgMuted}-fg} // 2026 // 21{/${theme.fgMuted}-fg}`
+      `{${theme.accent}-fg}Oliver Ulvebne{/${theme.accent}-fg}{${theme.fgMuted}-fg} // 2026 // 22{/${theme.fgMuted}-fg}`
     );
   }
 

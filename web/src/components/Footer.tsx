@@ -6,7 +6,7 @@ export function Footer({ linksPageActive }: FooterProps) {
   return (
     <div className="footer">
       <span className="footer-sig">
-        <span className="sig-accent">Oliver Ulvebne</span> // 2026 // 21
+        <span className="sig-accent">Oliver Ulvebne</span> // 2026 // 22
       </span>
       <span className="footer-shortcuts">
         {linksPageActive ? (
