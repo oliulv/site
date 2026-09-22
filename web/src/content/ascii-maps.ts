@@ -23,7 +23,7 @@ export const ukMap = `                      ⢰⠶
                 ⢀⣰⡿⣿⠿⢿⡏⠁    ⠁
                ⠚⠙⠏`;
 
-export const manchesterPositions: [number, number][] = [
-  [14, 26],
-  [14, 27],
+export const londonPositions: [number, number][] = [
+  [19, 33],
+  [19, 34],
 ];

@@ -1,29 +1,20 @@
 import blessed from "blessed";
 import type { Duplex } from "stream";
 import { StateManager, type AppState } from "./state";
-import { links } from "./content/links";
 import { createScreen } from "./ui/screen";
 import { theme } from "./ui/themes";
 import { createHeader, updateHeader } from "./ui/components/header";
-import { createFooter, updateFooter } from "./ui/components/footer";
-import { getAnimatedContent } from "./ui/components/animated-text";
 import {
   createAboutPage,
   updateAboutPage,
   getBioLength,
   MAP_LINE_COUNT,
 } from "./ui/components/about-page";
-import { createLinksPage, updateLinksPage } from "./ui/components/links-page";
 import {
   createLoadingScreen,
   updateLoadingScreen,
 } from "./ui/components/loading-screen";
 
-interface FlashBox extends blessed.Widgets.BoxElement {
-  _flashBox?: blessed.Widgets.BoxElement;
-}
-
-const VERSION = "0.0.1";
 const ANIMATION_INTERVAL = 80;
 const TYPEWRITER_INTERVAL = 15;
 const TYPEWRITER_BATCH = 6;
@@ -43,10 +34,7 @@ export class App {
   // UI Components
   private loadingScreen: blessed.Widgets.BoxElement | null = null;
   private header: blessed.Widgets.BoxElement | null = null;
-  private footer: blessed.Widgets.BoxElement | null = null;
   private aboutPage: blessed.Widgets.BoxElement | null = null;
-  private linksPage: blessed.Widgets.BoxElement | null = null;
-  private selectedLinkIndex = 0;
 
   private stream: Duplex;
   private renderPending = false;
@@ -109,131 +97,20 @@ export class App {
     // Create about page first (visible during typewriter)
     this.aboutPage = createAboutPage({ parent: this.screen, theme });
 
-    // Create header and footer — hidden initially, revealed partway through map
+    // Create header — hidden initially, revealed partway through map
     this.header = createHeader({ parent: this.screen, theme });
     this.header.hide();
-
-    this.footer = createFooter({
-      parent: this.screen,
-      theme,
-      version: VERSION,
-    });
-    this.footer.hide();
-
-    // Create links page (hidden until navigation)
-    this.linksPage = createLinksPage({ parent: this.screen, theme });
-    this.linksPage.hide();
 
     this.startTypewriter();
     this.startCursorBlink();
     this.startMapReveal();
   }
 
-  /** Show header/footer chrome (called when map is ~half revealed) */
+  /** Show header chrome (called when map is ~half revealed) */
   private revealChrome(): void {
     if (this.uiRevealed) return;
     this.uiRevealed = true;
     if (this.header) this.header.show();
-    if (this.footer) this.footer.show();
-  }
-
-  /** Enable navigation keys (called when typewriter finishes) */
-  private enableNavigation(): void {
-    this.setupKeyBindings();
-  }
-
-  private setupKeyBindings(): void {
-    this.screen.key(["tab", "S-tab"], (_ch, key) => {
-      this.state.navigate(key.shift ? "left" : "right");
-    });
-
-    this.screen.key(["up", "down"], (_ch, key) => {
-      if (!this.isLinksPageActive()) return;
-      this.moveLinkSelection(key.name as "up" | "down");
-    });
-
-    this.screen.key(["enter", "space"], () => {
-      if (!this.isLinksPageActive()) return;
-      this.openSelectedLink();
-    });
-  }
-
-  private isLinksPageActive(): boolean {
-    return this.state.getState().currentPage === "links";
-  }
-
-  private clampSelectedLinkIndex(): void {
-    if (links.length === 0) {
-      this.selectedLinkIndex = 0;
-      return;
-    }
-    this.selectedLinkIndex = Math.min(this.selectedLinkIndex, links.length - 1);
-  }
-
-  private moveLinkSelection(direction: "up" | "down"): void {
-    if (!this.linksPage || links.length === 0) return;
-    this.clampSelectedLinkIndex();
-    const delta = direction === "down" ? 1 : -1;
-    this.selectedLinkIndex =
-      (this.selectedLinkIndex + delta + links.length) % links.length;
-    updateLinksPage(this.linksPage, theme, this.selectedLinkIndex);
-    this.render();
-  }
-
-  private openSelectedLink(): void {
-    if (links.length === 0) return;
-    this.clampSelectedLinkIndex();
-    const selectedLink = links[this.selectedLinkIndex];
-    if (!selectedLink) return;
-
-    // iTerm2 URL opener (ignored by terminals that don't support it)
-    const encodedUrl = Buffer.from(selectedLink.url, "utf8").toString("base64");
-    this.stream.write(`\x1b]1337;OpenURL=:${encodedUrl}\x07`);
-
-    // OSC 52: copy URL to the client's clipboard (widely supported)
-    const clipboardPayload = Buffer.from(selectedLink.url, "utf8").toString(
-      "base64"
-    );
-    this.stream.write(`\x1b]52;c;${clipboardPayload}\x07`);
-
-    this.showFlash("Copied to clipboard");
-  }
-
-  private flashTimeout: ReturnType<typeof setTimeout> | null = null;
-
-  private showFlash(message: string): void {
-    if (!this.linksPage) return;
-
-    // Clear any pending flash timeout
-    if (this.flashTimeout) {
-      clearTimeout(this.flashTimeout);
-    }
-
-    // Show flash text in footer area of the links box
-    const flashBox =
-      (this.linksPage as FlashBox)._flashBox ??
-      blessed.box({
-        parent: this.linksPage,
-        bottom: 0,
-        left: 2,
-        width: "shrink",
-        height: 1,
-        tags: true,
-        style: { bg: theme.bg },
-      });
-    (this.linksPage as FlashBox)._flashBox = flashBox;
-
-    flashBox.setContent(
-      `{${theme.fgMuted}-fg}${message}{/${theme.fgMuted}-fg}`
-    );
-    flashBox.show();
-    this.render();
-
-    this.flashTimeout = setTimeout(() => {
-      flashBox.hide();
-      this.render();
-      this.flashTimeout = null;
-    }, 2000);
   }
 
   private startAnimation(): void {
@@ -248,7 +125,7 @@ export class App {
     this.typewriterTimer = setInterval(() => {
       const state = this.state.getState();
 
-      // Only run typewriter once, regardless of current page
+      // Only run typewriter once
       if (!state.typewriterComplete && state.typewriterIndex < bioLength) {
         this.state.incrementTypewriter(TYPEWRITER_BATCH);
       } else if (!state.typewriterComplete) {
@@ -258,9 +135,8 @@ export class App {
           clearInterval(this.typewriterTimer);
           this.typewriterTimer = null;
         }
-        // Enable navigation (chrome already visible from map reveal)
-        this.revealChrome(); // Ensure chrome is shown even if map was fast
-        this.enableNavigation();
+        // Ensure chrome is shown even if the map reveal was fast
+        this.revealChrome();
       }
     }, TYPEWRITER_INTERVAL);
   }
@@ -327,32 +203,9 @@ export class App {
         );
       }
 
-      // Update header/footer once chrome is revealed
-      if (this.uiRevealed) {
-        const animatedText = getAnimatedContent(state.animationFrame);
-
-        if (this.header) {
-          updateHeader(this.header, state, theme, animatedText);
-        }
-
-        if (this.footer) {
-          updateFooter(this.footer, theme, state.currentPage === "links");
-        }
-      }
-
-      // Handle page switching only after typewriter completes
-      if (state.typewriterComplete) {
-        if (this.aboutPage && this.linksPage) {
-          if (state.currentPage === "about") {
-            this.aboutPage.show();
-            this.linksPage.hide();
-          } else {
-            this.aboutPage.hide();
-            this.linksPage.show();
-            this.clampSelectedLinkIndex();
-            updateLinksPage(this.linksPage, theme, this.selectedLinkIndex);
-          }
-        }
+      // Update header once chrome is revealed
+      if (this.uiRevealed && this.header) {
+        updateHeader(this.header, theme);
       }
     }
 
@@ -397,10 +250,6 @@ export class App {
       if (this.mapRevealTimer) {
         clearInterval(this.mapRevealTimer);
         this.mapRevealTimer = null;
-      }
-      if (this.flashTimeout) {
-        clearTimeout(this.flashTimeout);
-        this.flashTimeout = null;
       }
       this.screen.destroy();
     } catch {

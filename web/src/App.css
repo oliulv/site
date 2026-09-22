@@ -2,12 +2,9 @@
 
 :root {
   --bg: #1a1a1a;
-  --bg-subtle: #222222;
   --fg: #e8e4de;
   --fg-muted: #5a5549;
   --accent: #e86a10;
-  --accent-dim: #e86a1033;
-  --border: #2a2622;
 }
 
 /* ── Reset & base ─────────────────────────────────────── */
@@ -77,7 +74,6 @@ body {
   justify-content: space-between;
   padding: 1em 2.5ch;
   flex-shrink: 0;
-  border-bottom: 1px solid var(--border);
 }
 
 .header-tabs {
@@ -87,23 +83,11 @@ body {
 
 .header-tab {
   font-family: "Space Grotesk", "Inter", system-ui, sans-serif;
-  color: var(--fg-muted);
-  cursor: pointer;
+  color: var(--accent);
   user-select: none;
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.15em;
-  transition: color 0.2s ease;
-}
-
-@media (hover: hover) {
-  .header-tab:hover {
-    color: var(--fg);
-  }
-}
-
-.header-tab.active {
-  color: var(--accent);
 }
 
 .header-equation {
@@ -146,16 +130,22 @@ body {
   color: var(--fg-muted);
 }
 
-.manchester {
+.london {
   color: var(--accent);
 }
 
+/* Anchored in map units: em/ch here resolve against the map's own font,
+   so the label tracks the same row/column at every breakpoint. */
 .location-label {
   position: absolute;
-  top: 11em;
-  left: 33ch;
-  color: var(--accent);
+  top: calc(22 * 1.2em); /* map row 22 (row height = .map-pre line-height) */
+  left: 36ch; /* map column 36 */
   line-height: 1.2;
+  white-space: nowrap;
+}
+
+.location-label-text {
+  color: var(--accent);
   font-family: "Space Grotesk", "Inter", system-ui, sans-serif;
   font-size: 12px;
   letter-spacing: 0.1em;
@@ -181,132 +171,6 @@ body {
 
 .cursor.hidden {
   visibility: hidden;
-}
-
-/* ── Links page ───────────────────────────────────────── */
-
-.links-page {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.links-box {
-  border: 1px solid var(--border);
-  padding: 1.6em 2.5ch;
-  width: 68ch;
-  background: var(--bg-subtle);
-}
-
-.links-title {
-  font-family: "Space Grotesk", "Inter", system-ui, sans-serif;
-  color: var(--accent);
-  font-weight: 600;
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  margin-bottom: 1.2em;
-}
-
-.links-list {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 1.2em;
-}
-
-.link-row {
-  display: flex;
-  text-decoration: none;
-  color: inherit;
-  padding: 0.25em 0;
-  cursor: pointer;
-  transition: background 0.15s ease;
-}
-
-@media (hover: hover) {
-  .link-row:hover {
-    background: var(--accent-dim);
-  }
-}
-
-.link-row .link-indicator {
-  width: 2ch;
-  flex-shrink: 0;
-  color: var(--accent);
-}
-
-.link-row .link-label {
-  width: 12ch;
-  flex-shrink: 0;
-  color: var(--fg);
-  white-space: pre;
-  font-weight: 500;
-}
-
-.link-row:not(.selected) .link-label {
-  font-weight: normal;
-  color: var(--fg);
-}
-
-.link-row .link-value {
-  color: var(--fg-muted);
-}
-
-.link-row.selected .link-indicator {
-  color: var(--accent);
-}
-
-.link-row.selected .link-label {
-  color: var(--accent);
-  font-weight: 500;
-}
-
-.link-row.selected .link-value {
-  color: var(--fg);
-}
-
-.links-url {
-  color: var(--fg-muted);
-  font-size: 12px;
-}
-
-.links-url-value {
-  color: var(--accent);
-}
-
-/* ── Footer ───────────────────────────────────────────── */
-
-.footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.75em 2.5ch;
-  flex-shrink: 0;
-  border-top: 1px solid var(--border);
-}
-
-.footer-sig {
-  font-family: "Space Grotesk", "Inter", system-ui, sans-serif;
-  color: var(--fg-muted);
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.25em;
-}
-
-.footer-sig .sig-accent {
-  color: var(--accent);
-}
-
-.footer-shortcuts {
-  font-family: "Space Grotesk", "Inter", system-ui, sans-serif;
-  color: var(--fg-muted);
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-}
-
-.shortcut-key {
-  color: var(--accent);
 }
 
 /* ── Mobile ───────────────────────────────────────────── */
@@ -375,36 +239,11 @@ body {
     font-size: 10px;
   }
 
-  .location-label {
+  .location-label-text {
     font-size: 11px;
   }
 
   .about-bio {
     width: 100%;
-  }
-
-  .links-page {
-    width: 100%;
-  }
-
-  .links-box {
-    width: 100%;
-    padding: 1.4em 1.8ch;
-  }
-
-  .link-row {
-    padding: 0.5em 0;
-  }
-
-  .link-row .link-label {
-    width: 11ch;
-  }
-
-  .footer {
-    padding: 0.75em 1.5ch;
-  }
-
-  .footer-shortcuts {
-    display: none;
   }
 }

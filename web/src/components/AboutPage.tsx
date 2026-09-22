@@ -1,10 +1,10 @@
-import { ukMap, manchesterPositions } from "../content/ascii-maps";
+import { ukMap, londonPositions } from "../content/ascii-maps";
 import { bio, bioLines } from "../content/bio";
 
 const MAP_LINES = ukMap.split("\n");
 const MAP_LINE_COUNT = MAP_LINES.length;
 const BIO_WIDTH = 50;
-const BULLET = "\u2022 ";
+const BULLET = "• ";
 const INDENT = "  ";
 const UNBULLETED_LINES = new Set(["Previously I have also:"]);
 
@@ -38,18 +38,20 @@ export function AboutPage({
   cursorVisible,
   mapRevealIndex,
 }: AboutPageProps) {
-  const manchSet = new Set(manchesterPositions.map(([r, c]) => `${r},${c}`));
+  const londonSet = new Set(londonPositions.map(([r, c]) => `${r},${c}`));
 
   const linesToShow = Math.min(mapRevealIndex, MAP_LINES.length);
 
   // Build map content
   const mapContent = MAP_LINES.slice(0, linesToShow).map((line, lineIdx) => {
-    const chars: Array<{ ch: string; isManchester: boolean }> = [];
+    const chars: Array<{ ch: string; isLondon: boolean }> = [];
     let col = 0;
     for (const ch of line) {
+      const isLondon = londonSet.has(`${lineIdx},${col}`);
       chars.push({
-        ch: manchSet.has(`${lineIdx},${col}`) ? "\u28FF" : ch,
-        isManchester: manchSet.has(`${lineIdx},${col}`),
+        // Override to full braille block for a solid 4×4 dot square
+        ch: isLondon ? "⣿" : ch,
+        isLondon,
       });
       col++;
     }
@@ -78,8 +80,8 @@ export function AboutPage({
           {mapContent.map((lineChars, lineIdx) => (
             <span key={lineIdx}>
               {lineChars.map((c, charIdx) =>
-                c.isManchester ? (
-                  <span key={charIdx} className="manchester">
+                c.isLondon ? (
+                  <span key={charIdx} className="london">
                     {c.ch}
                   </span>
                 ) : (
@@ -91,7 +93,9 @@ export function AboutPage({
           ))}
         </pre>
         {showLocationLabel && (
-          <div className="location-label">[Manchester]</div>
+          <div className="location-label">
+            <span className="location-label-text">[London]</span>
+          </div>
         )}
       </div>
       <div className="about-bio">

@@ -6,8 +6,6 @@ An SSH-accessible personal website with a terminal UI. Users connect via `ssh yo
 
 - **Loading screen**: Animated spinner on connection
 - **About page**: Dotted British Isles map + bio text with typewriter animation
-- **Links page**: Transparent single-panel list with selectable links
-- **Navigation**: `Tab` to switch pages
 - **Quit**: 'q' key disconnects
 - **Animated text**: Scrolling character in top-right
 - **Blinking cursor**: Orange cursor on bio text
@@ -55,17 +53,13 @@ bun test
 Edit content in `src/content/`:
 
 - `bio.ts` - Your bio text
-- `links.ts` - Your links (Website, Twitter, LinkedIn, GitHub)
-- `ascii-maps.ts` - ASCII art map
+- `ascii-maps.ts` - ASCII art map and the highlighted location marker
 
 ## Keyboard Shortcuts
 
-| Key               | Action                        |
-| ----------------- | ----------------------------- |
-| `Tab`             | Navigate between pages        |
-| `↑` / `↓`         | Select links on Links page    |
-| `Enter` / `Space` | Open selected link in browser |
-| `q` / `Esc`       | Quit                          |
+| Key         | Action |
+| ----------- | ------ |
+| `q` / `Esc` | Quit   |
 
 ## Tech Stack
 

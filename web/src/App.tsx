@@ -1,9 +1,7 @@
 import { useAppState } from "./hooks/useAppState";
 import { LoadingScreen } from "./components/LoadingScreen";
 import { Header } from "./components/Header";
-import { Footer } from "./components/Footer";
 import { AboutPage } from "./components/AboutPage";
-import { LinksPage } from "./components/LinksPage";
 import "./App.css";
 
 export default function App() {
@@ -19,29 +17,14 @@ export default function App() {
 
   return (
     <div className="app">
-      {state.chromeVisible && (
-        <Header
-          selectedNavIndex={state.selectedNavIndex}
-          onTabClick={state.setCurrentPage}
-        />
-      )}
+      {state.chromeVisible && <Header />}
       <div className="main-content">
-        {state.currentPage === "about" ? (
-          <AboutPage
-            typewriterIndex={state.typewriterIndex}
-            cursorVisible={state.cursorVisible}
-            mapRevealIndex={state.mapRevealIndex}
-          />
-        ) : (
-          <LinksPage
-            selectedLinkIndex={state.selectedLinkIndex}
-            onSelectLink={state.setSelectedLinkIndex}
-          />
-        )}
+        <AboutPage
+          typewriterIndex={state.typewriterIndex}
+          cursorVisible={state.cursorVisible}
+          mapRevealIndex={state.mapRevealIndex}
+        />
       </div>
-      {state.chromeVisible && (
-        <Footer linksPageActive={state.currentPage === "links"} />
-      )}
     </div>
   );
 }

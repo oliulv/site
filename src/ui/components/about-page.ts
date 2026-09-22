@@ -1,6 +1,6 @@
 import blessed from "blessed";
 import type { Theme } from "../themes";
-import { ukMap, manchesterPositions } from "../../content/ascii-maps";
+import { ukMap, londonPositions } from "../../content/ascii-maps";
 import { bio } from "../../content/bio";
 
 const MAP_LINES = ukMap.split("\n");
@@ -41,9 +41,9 @@ function wrapLine(line: string, width: number): string {
   return result.join("\n");
 }
 
-/** Build the map content with progressive reveal and orange Manchester */
+/** Build the map content with progressive reveal and orange London */
 function renderMap(theme: Theme, visibleLines: number): string {
-  const manchSet = new Set(manchesterPositions.map(([r, c]) => `${r},${c}`));
+  const londonSet = new Set(londonPositions.map(([r, c]) => `${r},${c}`));
 
   const linesToShow = Math.min(visibleLines, MAP_LINES.length);
 
@@ -52,7 +52,7 @@ function renderMap(theme: Theme, visibleLines: number): string {
       let result = "";
       let col = 0;
       for (const ch of line) {
-        if (manchSet.has(`${lineIdx},${col}`)) {
+        if (londonSet.has(`${lineIdx},${col}`)) {
           // Override to full braille block for a solid 4×4 dot square
           result += `{${theme.accent}-fg}\u28FF{/${theme.accent}-fg}`;
         } else {
@@ -97,11 +97,11 @@ export function createAboutPage(
     },
   });
 
-  // Location label — positioned to the upper-right of Manchester marker
+  // Location label — positioned to the lower-right of London marker
   const locationLabel = blessed.box({
     parent: container,
-    top: 11,
-    left: 33,
+    top: 22,
+    left: 36,
     width: 15,
     height: 1,
     content: "",
@@ -158,7 +158,7 @@ export function updateAboutPage(
   if (ext.locationLabel) {
     if (mapRevealIndex >= MAP_LINE_COUNT) {
       ext.locationLabel.setContent(
-        `{${theme.accent}-fg}[Manchester]{/${theme.accent}-fg}`
+        `{${theme.accent}-fg}[London]{/${theme.accent}-fg}`
       );
     } else {
       ext.locationLabel.setContent("");

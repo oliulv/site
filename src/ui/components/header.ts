@@ -1,6 +1,5 @@
 import blessed from "blessed";
 import type { Theme } from "../themes";
-import type { AppState } from "../../state";
 
 export interface HeaderOptions {
   parent: blessed.Widgets.Screen;
@@ -8,12 +7,11 @@ export interface HeaderOptions {
 }
 
 interface HeaderExtended extends blessed.Widgets.BoxElement {
-  _tabs?: blessed.Widgets.TextElement[];
+  _tab?: blessed.Widgets.TextElement;
   _nameBox?: blessed.Widgets.BoxElement;
 }
 
-const EQUATION =
-  "[1.01\u00B3\u2076\u2075 = 37.8]  >  [0.99\u00B3\u2076\u2075 = 0.03]";
+const EQUATION = "[1.01³⁶⁵ = 37.8]  >  [0.99³⁶⁵ = 0.03]";
 
 export function createHeader(
   options: HeaderOptions
@@ -31,25 +29,17 @@ export function createHeader(
     },
   });
 
-  // Create tab elements once
-  const tabs = ["About", "Links"];
-  const tabElements: blessed.Widgets.TextElement[] = [];
-  let leftOffset = 2;
-  for (const tab of tabs) {
-    const el = blessed.text({
-      parent: header,
-      top: 1,
-      left: leftOffset,
-      content: tab,
-      style: {
-        fg: theme.fgMuted,
-        bg: theme.bg,
-      },
-    });
-    tabElements.push(el);
-    leftOffset += tab.length + 3;
-  }
-  header._tabs = tabElements;
+  // Single "About" tab on the left
+  header._tab = blessed.text({
+    parent: header,
+    top: 1,
+    left: 2,
+    content: "About",
+    style: {
+      fg: theme.accent,
+      bg: theme.bg,
+    },
+  });
 
   // Equation in accent color on the right
   header._nameBox = blessed.box({
@@ -70,21 +60,15 @@ export function createHeader(
 
 export function updateHeader(
   header: blessed.Widgets.BoxElement,
-  state: AppState,
-  theme: Theme,
-  _animatedText: string
+  theme: Theme
 ): void {
   const ext = header as HeaderExtended;
 
   header.style.bg = theme.bg;
 
-  // Update tab highlight
-  if (ext._tabs) {
-    ext._tabs.forEach((tab, index) => {
-      tab.style.fg =
-        index === state.selectedNavIndex ? theme.accent : theme.fgMuted;
-      tab.style.bg = theme.bg;
-    });
+  if (ext._tab) {
+    ext._tab.style.fg = theme.accent;
+    ext._tab.style.bg = theme.bg;
   }
 
   // Update equation text

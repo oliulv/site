@@ -12,12 +12,11 @@ describe("StateManager", () => {
     it("should have correct default values", () => {
       const state = stateManager.getState();
       expect(state.phase).toBe("loading");
-      expect(state.currentPage).toBe("about");
-      expect(state.selectedNavIndex).toBe(0);
       expect(state.animationFrame).toBe(0);
       expect(state.typewriterIndex).toBe(0);
       expect(state.typewriterComplete).toBe(false);
       expect(state.cursorVisible).toBe(true);
+      expect(state.mapRevealIndex).toBe(0);
     });
 
     it("should return a copy of state, not the original", () => {
@@ -42,61 +41,6 @@ describe("StateManager", () => {
       });
       stateManager.setPhase("main");
       expect(notified).toBe(true);
-    });
-  });
-
-  describe("navigate", () => {
-    it("should navigate right from about to links", () => {
-      stateManager.navigate("right");
-      const state = stateManager.getState();
-      expect(state.currentPage).toBe("links");
-      expect(state.selectedNavIndex).toBe(1);
-    });
-
-    it("should navigate left from about to links (wrap around)", () => {
-      stateManager.navigate("left");
-      const state = stateManager.getState();
-      expect(state.currentPage).toBe("links");
-      expect(state.selectedNavIndex).toBe(1);
-    });
-
-    it("should navigate right from links to about (wrap around)", () => {
-      stateManager.navigate("right"); // about -> links
-      stateManager.navigate("right"); // links -> about
-      const state = stateManager.getState();
-      expect(state.currentPage).toBe("about");
-      expect(state.selectedNavIndex).toBe(0);
-    });
-
-    it("should navigate left from links to about", () => {
-      stateManager.navigate("right"); // about -> links
-      stateManager.navigate("left"); // links -> about
-      const state = stateManager.getState();
-      expect(state.currentPage).toBe("about");
-      expect(state.selectedNavIndex).toBe(0);
-    });
-
-    it("should NOT reset typewriter when navigating", () => {
-      // First increment typewriter
-      stateManager.incrementTypewriter();
-      stateManager.incrementTypewriter();
-      expect(stateManager.getState().typewriterIndex).toBe(2);
-
-      // Navigate away and back
-      stateManager.navigate("right"); // about -> links
-      stateManager.navigate("left"); // links -> about
-
-      // Typewriter should NOT reset - it only runs once
-      expect(stateManager.getState().typewriterIndex).toBe(2);
-    });
-
-    it("should notify listeners when navigating", () => {
-      let notifyCount = 0;
-      stateManager.subscribe(() => {
-        notifyCount++;
-      });
-      stateManager.navigate("right");
-      expect(notifyCount).toBe(1);
     });
   });
 
@@ -170,6 +114,23 @@ describe("StateManager", () => {
     });
   });
 
+  describe("incrementMapReveal", () => {
+    it("should increment map reveal index", () => {
+      stateManager.incrementMapReveal();
+      const state = stateManager.getState();
+      expect(state.mapRevealIndex).toBe(1);
+    });
+
+    it("should notify listeners", () => {
+      let notified = false;
+      stateManager.subscribe(() => {
+        notified = true;
+      });
+      stateManager.incrementMapReveal();
+      expect(notified).toBe(true);
+    });
+  });
+
   describe("subscribe", () => {
     it("should allow subscribing to state changes", () => {
       const receivedStates: ReturnType<StateManager["getState"]>[] = [];
@@ -177,10 +138,10 @@ describe("StateManager", () => {
         receivedStates.push(state);
       });
 
-      stateManager.navigate("right");
+      stateManager.incrementTypewriter();
 
       expect(receivedStates.length).toBe(1);
-      expect(receivedStates[0].currentPage).toBe("links");
+      expect(receivedStates[0].typewriterIndex).toBe(1);
     });
 
     it("should return unsubscribe function", () => {
@@ -189,11 +150,11 @@ describe("StateManager", () => {
         callCount++;
       });
 
-      stateManager.navigate("right");
+      stateManager.incrementTypewriter();
       expect(callCount).toBe(1);
 
       unsubscribe();
-      stateManager.navigate("left");
+      stateManager.incrementTypewriter();
       expect(callCount).toBe(1);
     });
 
@@ -208,7 +169,7 @@ describe("StateManager", () => {
         count2++;
       });
 
-      stateManager.navigate("right");
+      stateManager.incrementTypewriter();
 
       expect(count1).toBe(1);
       expect(count2).toBe(1);

@@ -1,10 +1,7 @@
-export type PageName = "about" | "links";
 export type AppPhase = "loading" | "main";
 
 export interface AppState {
   phase: AppPhase;
-  currentPage: PageName;
-  selectedNavIndex: number;
   animationFrame: number;
   typewriterIndex: number;
   typewriterComplete: boolean;
@@ -21,8 +18,6 @@ export class StateManager {
   constructor() {
     this.state = {
       phase: "loading",
-      currentPage: "about",
-      selectedNavIndex: 0,
       animationFrame: 0,
       typewriterIndex: 0,
       typewriterComplete: false,
@@ -49,22 +44,6 @@ export class StateManager {
 
   setPhase(phase: AppPhase): void {
     this.state.phase = phase;
-    this.notify();
-  }
-
-  navigate(direction: "left" | "right"): void {
-    const pages: PageName[] = ["about", "links"];
-    const currentIndex = pages.indexOf(this.state.currentPage);
-
-    let newIndex: number;
-    if (direction === "left") {
-      newIndex = currentIndex === 0 ? pages.length - 1 : currentIndex - 1;
-    } else {
-      newIndex = currentIndex === pages.length - 1 ? 0 : currentIndex + 1;
-    }
-
-    this.state.currentPage = pages[newIndex];
-    this.state.selectedNavIndex = newIndex;
     this.notify();
   }
 
